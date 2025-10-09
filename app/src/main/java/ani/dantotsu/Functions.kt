@@ -284,10 +284,38 @@ fun Activity.setNavigationTheme() {
  *
  * When nesting multiple scrolling views, only call this method on the inner most scrolling view.
  */
-fun ViewGroup.setBaseline(navBar: AnimatedBottomBar) {
-    navBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-    clipToPadding = false
-    setPadding(paddingLeft, paddingTop, paddingRight, navBarHeight + navBar.measuredHeight)
+fun ViewGroup.setBaseline(navBar: AnimatedBottomBar, extraPaddingBottom: Int = 0, extraMarginBottom: Int = 0) {
+    fun updateLayout() {
+        // Use navBar height only if it’s visible
+        val navBarHeight = if (navBar.visibility == View.VISIBLE) navBar.measuredHeight else 0
+
+        // Update bottom padding
+        clipToPadding = false
+        setPadding(
+            paddingLeft,
+            paddingTop,
+            paddingRight,
+            navBarHeight + extraPaddingBottom
+        )
+
+        // Update bottom margin if layout params are MarginLayoutParams
+        val lp = layoutParams
+        if (lp is ViewGroup.MarginLayoutParams) {
+            lp.bottomMargin = navBarHeight + extraMarginBottom
+            layoutParams = lp
+        }
+    }
+
+    // Initial layout update
+    post { updateLayout() }
+
+    // Update dynamically when navBar layout changes
+    navBar.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> post { updateLayout() } }
+
+    // Optional: update when keyboard opens/closes
+    rootView.viewTreeObserver.addOnGlobalLayoutListener {
+        post { updateLayout() }
+    }
 }
 
 /**
