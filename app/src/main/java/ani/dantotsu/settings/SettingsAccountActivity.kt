@@ -1,12 +1,15 @@
 package ani.dantotsu.settings
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
@@ -28,6 +31,7 @@ import ani.dantotsu.snackString
 import ani.dantotsu.startMainActivity
 import ani.dantotsu.statusBarHeight
 import ani.dantotsu.themes.ThemeManager
+import ani.dantotsu.util.AlertDialogBuilder
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import kotlinx.coroutines.launch
@@ -36,6 +40,22 @@ class SettingsAccountActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsAccountsBinding
     private val restartMainActivity = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() = startMainActivity(this@SettingsAccountActivity)
+    }
+
+    private fun showLogoutConfirmationDialog(context: Context, serviceName: String, onConfirm: () -> Unit) {
+        AlertDialogBuilder(context).apply {
+            setTitle("Logout $serviceName")
+            setMessage("Are you sure you want to logout?")
+            setPosButton("Yes") {
+                onConfirm.invoke()
+            }
+            setNegButton("No", null)
+            attach { dialog ->
+                val width = (context.resources.displayMetrics.widthPixels * 0.85).toInt()
+                dialog.window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+            }
+            show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,9 +91,11 @@ class SettingsAccountActivity : AppCompatActivity() {
                 if (Anilist.token != null) {
                     settingsAnilistLogin.setText(R.string.logout)
                     settingsAnilistLogin.setOnClickListener {
-                        Anilist.removeSavedToken()
-                        restartMainActivity.isEnabled = true
-                        reload()
+                        showLogoutConfirmationDialog(context, "AniList") {
+                            Anilist.removeSavedToken()
+                            Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT).show()
+                            startMainActivity(this@SettingsAccountActivity)
+                        }
                     }
                     settingsAnilistUsername.visibility = View.VISIBLE
                     settingsAnilistUsername.text = Anilist.username
@@ -94,9 +116,11 @@ class SettingsAccountActivity : AppCompatActivity() {
                     if (MAL.token != null) {
                         settingsMALLogin.setText(R.string.logout)
                         settingsMALLogin.setOnClickListener {
-                            MAL.removeSavedToken()
-                            restartMainActivity.isEnabled = true
-                            reload()
+                            showLogoutConfirmationDialog(context, "MAL") {
+                                MAL.removeSavedToken()
+                                Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT).show()
+                                startMainActivity(this@SettingsAccountActivity)
+                            }
                         }
                         settingsMALUsername.visibility = View.VISIBLE
                         settingsMALUsername.text = MAL.username
@@ -143,9 +167,11 @@ class SettingsAccountActivity : AppCompatActivity() {
                         username ?: Discord.token?.replace(Regex("."), "*")
                     settingsDiscordLogin.setText(R.string.logout)
                     settingsDiscordLogin.setOnClickListener {
-                        Discord.removeSavedToken(context)
-                        restartMainActivity.isEnabled = true
-                        reload()
+                        showLogoutConfirmationDialog(context, "Discord") {
+                            Discord.removeSavedToken(context)
+                            Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT).show()
+                            startMainActivity(this@SettingsAccountActivity)
+                        }
                     }
 
                     settingsPresenceSwitcher.visibility = View.VISIBLE
@@ -262,4 +288,3 @@ class SettingsAccountActivity : AppCompatActivity() {
         //} Disabled for now. Doesn't update the ADDRESS even after this
     }
 }
-

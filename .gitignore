@@ -28,6 +28,7 @@ output.json
 # Keystore files
 *.jks
 *.keystore
+keystore.properties
 
 # Android Profiling
 *.hprof
