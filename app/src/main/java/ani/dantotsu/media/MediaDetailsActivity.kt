@@ -138,7 +138,7 @@ AndroidBug5497Workaround.assistActivity(this) { keyboardVisible ->
         val navBarBottomMargin = if (resources.configuration.orientation ==
             Configuration.ORIENTATION_LANDSCAPE
         ) 0 else navBarHeight
-        navBar.setPadding(
+         binding.mediaBottomBarContainer.setPadding(
             navBar.paddingLeft,
             navBar.paddingTop,
             navBar.paddingRight + navBarRightMargin,
