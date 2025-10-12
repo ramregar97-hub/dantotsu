@@ -100,6 +100,7 @@ class MediaDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChangedLi
 
         mediaSingleton = null
         ThemeManager(this).applyTheme(MediaSingleton.bitmap)
+        initActivity(this)
         MediaSingleton.bitmap = null
 
         binding = ActivityMediaBinding.inflate(layoutInflater)
@@ -109,7 +110,7 @@ class MediaDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChangedLi
 
         // Ui init
 
-        initActivity(this)
+
 
         binding.mediaViewPager.updateLayoutParams<ViewGroup.MarginLayoutParams> {
             bottomMargin = navBarHeight
@@ -138,12 +139,13 @@ AndroidBug5497Workaround.assistActivity(this) { keyboardVisible ->
         val navBarBottomMargin = if (resources.configuration.orientation ==
             Configuration.ORIENTATION_LANDSCAPE
         ) 0 else navBarHeight
-         binding.mediaBottomBarContainer.setPadding(
+        navBar.setPadding(
             navBar.paddingLeft,
             navBar.paddingTop,
             navBar.paddingRight + navBarRightMargin,
-            navBar.paddingBottom + navBarBottomMargin
+            navBar.paddingBottom
         )
+        navBar.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin += navBarBottomMargin }
         binding.mediaBanner.updateLayoutParams { height += statusBarHeight }
         binding.mediaBannerNoKen.updateLayoutParams { height += statusBarHeight }
         binding.mediaClose.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin += statusBarHeight }
@@ -376,7 +378,7 @@ AndroidBug5497Workaround.assistActivity(this) { keyboardVisible ->
             anime = false
         }
 
-        selected = if (PrefManager.getVal<Int>(PrefName.CommentsEnabled) != 1 && media.selected!!.window == 2) 1 else media.selected!!.window
+        selected = media.selected!!.window
         binding.mediaTitle.translationX = -screenWidth
 
         val infoTab = navBar.createTab(R.drawable.ic_round_info_24, R.string.info, R.id.info)
