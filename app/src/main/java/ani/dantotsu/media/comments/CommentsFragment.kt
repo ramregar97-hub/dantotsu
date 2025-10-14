@@ -76,7 +76,7 @@ class CommentsFragment : Fragment() {
 
         binding.commentsListContainer.setBaseline(
             activity.navBar,
-            
+
         )
 
         //get the media id from the intent
