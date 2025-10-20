@@ -1128,7 +1128,7 @@ class ExoplayerView :
                     "${media.id}_${episodeArr[currentEpisodeIndex]}",
                     exoPlayer.currentPosition,
                 )
-                exoPlayer.seekTo(0)
+               // exoPlayer.seekTo(0) current episode play from thr start after i clicking on the next episode or auto next episode
                 val prev = episodeArr[currentEpisodeIndex]
                 isTimeStampsLoaded = false
                 episodeLength = 0f
