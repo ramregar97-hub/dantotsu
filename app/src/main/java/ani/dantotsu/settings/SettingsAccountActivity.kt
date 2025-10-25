@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +20,9 @@ import ani.dantotsu.R
 import ani.dantotsu.connections.anilist.Anilist
 import ani.dantotsu.connections.discord.Discord
 import ani.dantotsu.connections.mal.MAL
+import ani.dantotsu.connections.simkl.Simkl
+import ani.dantotsu.connections.simkl.SimklAuth
+import ani.dantotsu.connections.simkl.AnimeUpdate
 import ani.dantotsu.databinding.ActivitySettingsAccountsBinding
 import ani.dantotsu.initActivity
 import ani.dantotsu.loadImage
@@ -31,7 +35,9 @@ import ani.dantotsu.snackString
 import ani.dantotsu.startMainActivity
 import ani.dantotsu.statusBarHeight
 import ani.dantotsu.themes.ThemeManager
+import ani.dantotsu.toast
 import ani.dantotsu.util.AlertDialogBuilder
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import kotlinx.coroutines.launch
@@ -42,7 +48,11 @@ class SettingsAccountActivity : AppCompatActivity() {
         override fun handleOnBackPressed() = startMainActivity(this@SettingsAccountActivity)
     }
 
-    private fun showLogoutConfirmationDialog(context: Context, serviceName: String, onConfirm: () -> Unit) {
+    private fun showLogoutConfirmationDialog(
+        context: Context,
+        serviceName: String,
+        onConfirm: () -> Unit
+    ) {
         AlertDialogBuilder(context).apply {
             setTitle("Logout $serviceName")
             setMessage("Are you sure you want to logout?")
@@ -118,7 +128,8 @@ class SettingsAccountActivity : AppCompatActivity() {
                         settingsMALLogin.setOnClickListener {
                             showLogoutConfirmationDialog(context, "MAL") {
                                 MAL.removeSavedToken()
-                                Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT)
+                                    .show()
                                 startMainActivity(this@SettingsAccountActivity)
                             }
                         }
@@ -169,19 +180,21 @@ class SettingsAccountActivity : AppCompatActivity() {
                     settingsDiscordLogin.setOnClickListener {
                         showLogoutConfirmationDialog(context, "Discord") {
                             Discord.removeSavedToken(context)
-                            Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Logout successfully", Toast.LENGTH_SHORT)
+                                .show()
                             startMainActivity(this@SettingsAccountActivity)
                         }
                     }
 
                     settingsPresenceSwitcher.visibility = View.VISIBLE
-                    var initialStatus = when (PrefManager.getVal<String>(PrefName.DiscordStatus)) {
-                        "online" -> R.drawable.discord_status_online
-                        "idle" -> R.drawable.discord_status_idle
-                        "dnd" -> R.drawable.discord_status_dnd
-                        "invisible" -> R.drawable.discord_status_invisible
-                        else -> R.drawable.discord_status_online
-                    }
+                    var initialStatus =
+                        when (PrefManager.getVal<String>(PrefName.DiscordStatus)) {
+                            "online" -> R.drawable.discord_status_online
+                            "idle" -> R.drawable.discord_status_idle
+                            "dnd" -> R.drawable.discord_status_dnd
+                            "invisible" -> R.drawable.discord_status_invisible
+                            else -> R.drawable.discord_status_online
+                        }
                     settingsPresenceSwitcher.setImageResource(initialStatus)
 
                     val zoomInAnimation =
@@ -233,6 +246,7 @@ class SettingsAccountActivity : AppCompatActivity() {
                 }
             }
             reload()
+            setupSimklSettings()
         }
         binding.settingsRecyclerView.adapter = SettingsAdapter(
             arrayListOf(
@@ -279,12 +293,47 @@ class SettingsAccountActivity : AppCompatActivity() {
 
     }
 
+    private fun setupSimklSettings() {
+        val simkl = Simkl.getInstance()
+        binding.simklSettings.apply {
+            btnSimklLogin.setOnClickListener {
+                SimklAuth.startLogin(this@SettingsAccountActivity)
+            }
+
+            btnSimklLogout.setOnClickListener {
+                simkl.logout()
+                updateSimklUI()
+                toast("Logged out from Simkl")
+            }
+
+            switchSimklAnimeSync.isChecked = simkl.isEnabled()
+            switchSimklAnimeSync.setOnCheckedChangeListener { _, isChecked ->
+                simkl.setEnabled(isChecked)
+                toast("Simkl anime sync ${if (isChecked) "enabled" else "disabled"}")
+            }
+
+            updateSimklUI()
+        }
+    }
+
+    private fun updateSimklUI() {
+        val isLoggedIn = Simkl.getInstance().isLoggedIn()
+        binding.simklSettings.apply {
+            btnSimklLogin.isVisible = !isLoggedIn
+            btnSimklLogout.isVisible = isLoggedIn
+            switchSimklAnimeSync.isEnabled = isLoggedIn
+
+            tvSimklStatus.text = if (isLoggedIn) {
+                "✅ Logged in - Anime sync available"
+            } else {
+                "❌ Not logged in"
+            }
+
+            tvSimklNote.text = "Note: Simkl only supports anime tracking (no manga)"
+        }
+    }
+
     fun reload() {
         snackString(getString(R.string.restart_app_extra))
-        //snackString(R.string.restart_app_extra)
-        //?.setDuration(Snackbar.LENGTH_LONG)
-        //?.setAction(R.string.do_it) {
-        //startMainActivity(this@SettingsAccountActivity)
-        //} Disabled for now. Doesn't update the ADDRESS even after this
     }
 }

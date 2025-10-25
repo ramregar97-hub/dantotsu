@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simkl (Anime Only)"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/tvSimklNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Note: Simkl only supports anime tracking"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/tvSimklStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="❌ Not logged in"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Login/Logout -->
+    <Button
+        android:id="@+id/btnSimklLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login to Simkl"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnSimklLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:visibility="gone"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Anime Sync Toggle -->
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchSimklAnimeSync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto-sync anime progress"
+        android:enabled="false"
+        android:layout_marginBottom="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+</LinearLayout>

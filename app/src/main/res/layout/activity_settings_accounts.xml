@@ -60,6 +60,10 @@
 
         </LinearLayout>
 
+        <include
+            android:id="@+id/simkl_settings"
+            layout="@layout/simkl_settings_section" />
+
         <LinearLayout
             android:id="@+id/settingsAnilistLoginContainer"
             android:layout_width="match_parent"
