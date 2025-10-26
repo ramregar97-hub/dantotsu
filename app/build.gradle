@@ -1,3 +1,4 @@
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -11,7 +12,19 @@ def gitCommitHash = providers.exec {
 }.standardOutput.asText.get().trim()
 
 android {
+    // vvvvv THIS IS THE NEW, CORRECT PLACEMENT for the loading logic vvvvv
+    // We define and load the properties file here, inside the android block.
+    def apikeyProperties = new Properties()
+    def apikeyPropertiesFile = rootProject.file("apikey.properties")
+    if (apikeyPropertiesFile.exists()) {
+        apikeyPropertiesFile.withReader('UTF-8') { reader ->
+            apikeyProperties.load(reader)
+        }
+    }
     compileSdk 35
+    
+
+    
 
     defaultConfig {
         applicationId "ani.dantotsu"
@@ -52,6 +65,10 @@ android {
             jniDebuggable true
             minifyEnabled false
             shrinkResources false
+
+            buildConfigField "String", "SIMKL_CLIENT_ID", "\"${apikeyProperties['SIMKL_CLIENT_ID_SECRET'] ?: System.getenv("SIMKL_CLIENT_ID_SECRET") ?: ""}\""
+            buildConfigField "String", "SIMKL_CLIENT_SECRET", "\"${apikeyProperties['SIMKL_CLIENT_SECRET'] ?: System.getenv("SIMKL_CLIENT_SECRET") ?: ""}\""
+
         }
         debug {
             applicationIdSuffix ".beta"
@@ -59,12 +76,16 @@ android {
             manifestPlaceholders.icon_placeholder = "@mipmap/ic_launcher_beta"
             manifestPlaceholders.icon_placeholder_round = "@mipmap/ic_launcher_beta_round"
             debuggable false
+            buildConfigField "String", "SIMKL_CLIENT_ID", "\"${apikeyProperties['SIMKL_CLIENT_ID_SECRET'] ?: System.getenv("SIMKL_CLIENT_ID_SECRET") ?: ""}\""
+            buildConfigField "String", "SIMKL_CLIENT_SECRET", "\"${apikeyProperties['SIMKL_CLIENT_SECRET'] ?: System.getenv("SIMKL_CLIENT_SECRET") ?: ""}\""
         }
         release {
             manifestPlaceholders.icon_placeholder = "@mipmap/ic_launcher"
             manifestPlaceholders.icon_placeholder_round = "@mipmap/ic_launcher_round"
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-gson.pro', 'proguard-rules.pro'
+            buildConfigField "String", "SIMKL_CLIENT_ID", "\"${apikeyProperties['SIMKL_CLIENT_ID_SECRET'] ?: System.getenv("SIMKL_CLIENT_ID_SECRET") ?: ""}\""
+            buildConfigField "String", "SIMKL_CLIENT_SECRET", "\"${apikeyProperties['SIMKL_CLIENT_SECRET'] ?: System.getenv("SIMKL_CLIENT_SECRET") ?: ""}\""
         }
     }
     buildFeatures {
