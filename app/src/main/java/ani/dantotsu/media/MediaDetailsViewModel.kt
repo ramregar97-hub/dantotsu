@@ -2,12 +2,16 @@ package ani.dantotsu.media
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ani.dantotsu.R
 import ani.dantotsu.connections.anilist.Anilist
+import ani.dantotsu.connections.mal.MAL
+import ani.dantotsu.connections.simkl.Simkl
 import ani.dantotsu.currContext
 import ani.dantotsu.media.anime.Episode
 import ani.dantotsu.media.anime.SelectorDialogFragment
@@ -34,6 +38,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MediaDetailsViewModel : ViewModel() {
     val scrolledToTop = MutableLiveData(true)
@@ -347,4 +352,15 @@ class MediaDetailsViewModel : ViewModel() {
         }
     }
 
+    fun updateProgress(media: Media, episode: Int) {
+        /*viewModelScope.launch(Dispatchers.IO) {
+            Anilist.mutation.updateProgress(media.id, episode)
+            if (MAL.isLoggedIn) {
+                MAL.updateProgress(media.idMAL, episode)
+            }
+            if (Simkl.isLoggedIn && media.type == "ANIME") {
+                Simkl.updateAnimeProgress(media.id, episode)
+            }
+        }*/
+    }
 }

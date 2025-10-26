@@ -56,6 +56,8 @@ enum class PrefName(val data: Pref) {
     EnableSocks5Proxy(Pref(Location.General, Boolean::class, false)),
     ProxyAuthEnabled(Pref(Location.General, Boolean::class, false)),
     AniMangaSearchDirect(Pref(Location.General, Boolean::class, true)),
+    SimklEnabled(Pref(Location.General, Boolean::class, false)),
+
 
     //User Interface
     UseOLED(Pref(Location.UI, Boolean::class, false)),
@@ -226,6 +228,7 @@ enum class PrefName(val data: Pref) {
     AnilistUserId(Pref(Location.Protected, String::class, "")),
     MALCodeChallenge(Pref(Location.Protected, String::class, "")),
     MALToken(Pref(Location.Protected, MAL.ResponseToken::class, "")),
+    SimklToken(Pref(Location.Protected, String::class, "")),
     AppPassword(Pref(Location.Protected, String::class, "")),
     BiometricToken(Pref(Location.Protected, String::class, "")),
     OverridePassword(Pref(Location.Protected, Boolean::class, false)),

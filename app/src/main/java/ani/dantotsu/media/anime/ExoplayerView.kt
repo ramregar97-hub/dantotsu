@@ -1128,6 +1128,7 @@ class ExoplayerView :
                     "${media.id}_${episodeArr[currentEpisodeIndex]}",
                     exoPlayer.currentPosition,
                 )
+
                 val prev = episodeArr[currentEpisodeIndex]
                 isTimeStampsLoaded = false
                 episodeLength = 0f
